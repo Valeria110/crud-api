@@ -14,6 +14,13 @@ const addUser = (newUserData: IUser) => {
   users.set(newUserData.id, newUserData);
 };
 
+const updateUser = (body: Partial<IUser>, userId: string) => {
+  const user = users.get(userId) as IUser;
+  const updatedUserData = { ...user, ...body };
+  users.set(userId, updatedUserData);
+  return updatedUserData;
+};
+
 // JSON:
 // {
 //     "username": "Valerie",
@@ -21,4 +28,4 @@ const addUser = (newUserData: IUser) => {
 //     "hobbies": "['reading', 'programming']"
 //   }
 
-export { getUsers, addUser, getUserById };
+export { getUsers, addUser, getUserById, updateUser };

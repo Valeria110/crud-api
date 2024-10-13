@@ -1,8 +1,8 @@
 import { IncomingMessage, ServerResponse } from 'node:http';
-import { addUser, getUserById, getUsers } from './users';
-import { validate as uuidValidate, v4 as uuidv4 } from 'uuid';
+import { addUser, getUserById, getUsers, updateUser } from './users';
+import { v4 as uuidv4 } from 'uuid';
 import { IUser } from '../types/types';
-import { getRequestBody } from '../utils/utils';
+import { isValidBody, isValidUserId } from '../utils/utils';
 import { serverError } from '../routes/serverError';
 
 const handleGetReq = (reqUrl: string, res: ServerResponse) => {
@@ -18,19 +18,10 @@ const handleGetReq = (reqUrl: string, res: ServerResponse) => {
 };
 
 const handleGetUser = (userId: string, res: ServerResponse) => {
-  if (uuidValidate(userId)) {
-    const user = getUserById(userId) ?? null;
-
-    if (user) {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(user));
-    } else {
-      res.writeHead(404, 'User with this id does not exist');
-      res.end();
-    }
-  } else {
-    res.writeHead(400, 'Invalid user id');
-    res.end();
+  if (isValidUserId(userId, res)) {
+    const user = getUserById(userId);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(user));
   }
 };
 
@@ -62,7 +53,7 @@ const handlePostReq = (req: IncomingMessage, res: ServerResponse) => {
       addUser(newUser);
       res.writeHead(201, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(newUser));
-    } catch (error) {
+    } catch {
       serverError(res);
     }
   });
@@ -72,4 +63,35 @@ const handlePostReq = (req: IncomingMessage, res: ServerResponse) => {
   });
 };
 
-export { handleGetReq, handlePostReq };
+const handlePutRequest = (req: IncomingMessage, res: ServerResponse) => {
+  const userId = (req.url as string).split('/').slice(1)[2];
+  let body = '';
+
+  req.on('data', (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on('end', () => {
+    try {
+      const parsedBody = JSON.parse(body);
+      if (isValidBody(parsedBody)) {
+        if (isValidUserId(userId, res)) {
+          const updatedUser = updateUser(parsedBody, userId);
+          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(updatedUser));
+        }
+      } else {
+        res.writeHead(400, 'Invalid data', { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'A user can only contain username, age and hobbies fields' }));
+      }
+    } catch {
+      serverError(res);
+    }
+  });
+
+  req.on('error', () => {
+    serverError(res);
+  });
+};
+
+export { handleGetReq, handlePostReq, handlePutRequest };
