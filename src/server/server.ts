@@ -1,7 +1,7 @@
 import http from 'node:http';
 import { serverError } from '../routes/serverError';
 import { isMulti, isValidReqUrl } from '../utils/utils';
-import { handleGetReq, handlePostReq, handlePutRequest } from '../api/handleRequests';
+import { handleDeleteReq, handleGetReq, handlePostReq, handlePutRequest } from '../api/handleRequests';
 
 const startServer = (PORT: string) => {
   const server = http.createServer((req, res) => {
@@ -23,7 +23,7 @@ const startServer = (PORT: string) => {
             handlePutRequest(req, res);
             break;
           case 'DELETE':
-            console.log('method: ', method);
+            handleDeleteReq(req.url as string, res);
             break;
         }
       } catch {

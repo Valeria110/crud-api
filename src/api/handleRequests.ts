@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'node:http';
-import { addUser, getUserById, getUsers, updateUser } from './users';
+import { addUser, deleteUserById, getUserById, getUsers, updateUser } from './users';
 import { v4 as uuidv4 } from 'uuid';
 import { IUser } from '../types/types';
 import { isValidBody, isValidUserId } from '../utils/utils';
@@ -94,4 +94,13 @@ const handlePutRequest = (req: IncomingMessage, res: ServerResponse) => {
   });
 };
 
-export { handleGetReq, handlePostReq, handlePutRequest };
+const handleDeleteReq = (reqUrl: string, res: ServerResponse) => {
+  const userId = reqUrl.split('/').slice(1)[2];
+  if (isValidUserId(userId, res)) {
+    deleteUserById(userId);
+    res.writeHead(204, 'User deleted and found succesfully', { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ message: `User with id${userId} is deleted` }));
+  }
+};
+
+export { handleGetReq, handlePostReq, handlePutRequest, handleDeleteReq };

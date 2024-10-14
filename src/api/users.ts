@@ -21,6 +21,11 @@ const updateUser = (body: Partial<IUser>, userId: string) => {
   return updatedUserData;
 };
 
+const deleteUserById = (userId: string) => {
+  users.delete(userId);
+  return users;
+};
+
 // JSON:
 // {
 //     "username": "Valerie",
@@ -28,4 +33,4 @@ const updateUser = (body: Partial<IUser>, userId: string) => {
 //     "hobbies": "['reading', 'programming']"
 //   }
 
-export { getUsers, addUser, getUserById, updateUser };
+export { getUsers, addUser, getUserById, updateUser, deleteUserById };
