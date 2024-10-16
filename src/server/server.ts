@@ -1,33 +1,33 @@
 import http from 'node:http';
-import { serverError } from '../routes/serverError';
-import { isMulti, isValidReqUrl } from '../utils/utils';
+import { handleServerError } from '../routes/handleServerError';
+import { isValidReqUrl } from '../utils';
 import { handleDeleteReq, handleGetReq, handlePostReq, handlePutRequest } from '../api/handleRequests';
+import { HttpMethod } from '../types/types';
 
-const startServer = (PORT: string) => {
+const startServer = (PORT: number) => {
   const server = http.createServer((req, res) => {
     console.log(req.url, req.method);
-    const isMultiMode = isMulti();
 
     if (isValidReqUrl(req.url, res)) {
       const method = req.method;
 
       try {
         switch (method) {
-          case 'GET':
+          case HttpMethod.GET:
             handleGetReq(req.url as string, res);
             break;
-          case 'POST':
+          case HttpMethod.POST:
             handlePostReq(req, res);
             break;
-          case 'PUT':
+          case HttpMethod.PUT:
             handlePutRequest(req, res);
             break;
-          case 'DELETE':
+          case HttpMethod.DELETE:
             handleDeleteReq(req.url as string, res);
             break;
         }
       } catch {
-        serverError(res);
+        handleServerError(res);
       }
     }
   });

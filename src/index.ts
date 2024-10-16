@@ -1,10 +1,10 @@
 import 'dotenv/config';
-import { isMulti } from './utils/utils';
+import { isMulti } from './utils';
 import cluster from 'node:cluster';
 import { startServer } from './server/server';
-import { createWorkers } from './server/worker';
+import { createWorkers } from './server/cluster';
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT ?? 4000;
 const isMultiMode = isMulti();
 
 if (!PORT) {
@@ -13,10 +13,9 @@ if (!PORT) {
 }
 
 if (isMultiMode && cluster.isPrimary) {
-  createWorkers(Number(PORT));
+  createWorkers(+PORT);
 } else if (isMultiMode && cluster.isWorker) {
-  startServer(PORT);
-  console.log('Starting worker server');
+  startServer(+PORT);
 } else {
-  startServer(PORT);
+  startServer(+PORT);
 }

@@ -5,4 +5,25 @@ interface IUser {
   hobbies: string[];
 }
 
-export { IUser };
+interface IWorker {
+  pid: number;
+  port: number;
+}
+
+enum HttpMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+}
+
+enum StatusCode {
+  OK = 200,
+  Created = 201,
+  NoContent = 204,
+  BadRequest = 400,
+  NotFound = 404,
+  ServerError = 500,
+}
+
+export { IUser, IWorker, HttpMethod, StatusCode };
