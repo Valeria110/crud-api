@@ -103,4 +103,4 @@ const handleDeleteReq = (reqUrl: string, res: ServerResponse) => {
   }
 };
 
-export { handleGetReq, handlePostReq, handlePutRequest, handleDeleteReq };
+export { handleGetReq, handleGetUsers, handleGetUser, handlePostReq, handlePutRequest, handleDeleteReq };
